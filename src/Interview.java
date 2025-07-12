@@ -1,5 +1,6 @@
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Interview {
 
@@ -16,10 +17,17 @@ public class Interview {
         System.out.println("task 2 ongoing");
         etathread.start();
        EmailService.mainexecute();
+       TicketBooking ticketBooking=new TicketBooking();
+       Thread user1=new Thread(()->ticketBooking.bookticket("sayan"));
+       Thread user2=new Thread(()-> ticketBooking.bookticket("subham"));
+       user1.start();
+       user2.start();
         try{
             smsthread.join();
             emailthread.join();
             String eta=etatask.get();
+            user1.join();
+            user2.join();
             System.out.println("ETA is " + eta);
             System.out.println("all tasks done");
         }catch (InterruptedException e){
@@ -110,5 +118,30 @@ class PurchaseAtomicCounter{
 
     public int getcount(){
         return likes.get();
+    }
+}
+
+class TicketBooking {
+
+    private int availableseats=2;
+    private final ReentrantLock lock=new ReentrantLock();
+
+    public void bookticket(String user){
+        System.out.println(user +" is trying to book ticket");
+        lock.lock();
+        try{
+            System.out.println(user+" acquired lock");
+            //critical section
+            if(availableseats>0){
+                System.out.println(user +" successfully booked the seat");
+                availableseats--;
+            }else{
+                System.out.println(user+ " could not book the seat");
+            }
+        }
+        finally {
+            System.out.println(user+" is releasing the lock");
+            lock.unlock();
+        }
     }
 }

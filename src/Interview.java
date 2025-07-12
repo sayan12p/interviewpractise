@@ -1,4 +1,5 @@
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Interview {
 
@@ -93,5 +94,21 @@ class EmailService{
         for(int i=1;i<25;i++)
             sendEmail("user"+ i + "gmail.com");
         executor.shutdown();
+    }
+}
+//Atomic operations
+class PurchaseAtomicCounter{
+    private final AtomicInteger likes=new AtomicInteger(0);
+
+    public void increamentlikes(){
+        int prev,next;
+        do{
+            prev=likes.get();
+            next=prev+1;
+        }while(!likes.compareAndSet(prev,next));
+    }
+
+    public int getcount(){
+        return likes.get();
     }
 }

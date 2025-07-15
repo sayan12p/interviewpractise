@@ -6,8 +6,22 @@ public class Interview {
 
     public static void main(String[] args) {
         System.out.println("hello");
-        Thread smsthread=new Thread(new SMSThreadRunnable());
-        Thread emailthread=new Thread(new EmailThreadRunnable());
+        Thread smsthread=new Thread(()->{
+            try{
+                Thread.sleep(30);
+                System.out.println("SMS sent using Thread");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        Thread emailthread=new Thread(()->{
+            try{
+                Thread.sleep(30);
+                System.out.println("Email sent using Thread");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
         FutureTask<String> etatask=new FutureTask<String>(new EtaCalculator("blr"));
         Thread etathread=new Thread(etatask);
         System.out.println("task started");
@@ -51,32 +65,6 @@ class EtaCalculator implements Callable{
         System.out.println("[" +Thread.currentThread().getName()+ "] Calculating ETA to: "+location );
         Thread.sleep(20);
         return "ETA to " +location+" :20 mintutes";
-    }
-}
-
-class EmailThreadRunnable implements Runnable {
-
-    @Override
-    public void run() {
-        try{
-            Thread.sleep(30);
-            System.out.println("Email sent using Thread");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-}
-
-class SMSThreadRunnable implements Runnable {
-
-    @Override
-    public void run() {
-        try{
-            Thread.sleep(30);
-            System.out.println("SMS sent using Thread");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
 
